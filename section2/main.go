@@ -2,16 +2,17 @@ package main
 
 import (
 	"flag"
-	// "fmt"
 	"net/http"
 
 	"cncamp/section2/routes"
+	
 	"github.com/gorilla/mux"
-	"github.com/golang/glog"
+	"github.com/rs/zerolog/log"
+
 )
 
 func main() {
-	setupLogger()
+	flag.Parse()
 	startServer()
 }
 
@@ -21,14 +22,9 @@ func startServer() {
 	r.HandleFunc("/healthz", routes.HealthCheckHandler)
 	r.PathPrefix("/").HandlerFunc(routes.HomeHandler)
 
+	log.Info().Msg("Service is starting to listen on http://localhost/")
 	err := http.ListenAndServe("0.0.0.0:80", r)
 	if err != nil {
-		//fmt.Println("Failed to start server: %v", err)
+		log.Info().Msg("Start server failed...")
 	}
-}
-
-func setupLogger() {
-	flag.Set("v", "4")
-	glog.V(2).Info("starting http server...")
-	defer glog.Flush()
 }

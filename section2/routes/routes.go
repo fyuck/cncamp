@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/golang/glog"
+	
+	"github.com/rs/zerolog/log"
 )
 
 // HomeHandler 
@@ -16,20 +16,23 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	version := os.Getenv("VERSION")
 	if version == "" {
 		w.Header().Add("VERSION", "emptyVersion")
-		io.WriteString(w, "No VERSION found.\n")
+		log.Error().Msg("No VERSION found.")
 	}else{
 		w.Header().Add("VERSION", version)
 	}
 	
 	// Get request headers and write them to response headers.
-	for k,v := range r.Header {
+	for k, v := range r.Header {
+		log.Info().Msg(k)
 		w.Header().Add(k, strings.Join(v, ","))
 	}
 	io.WriteString(w, "Request headers are written in response headers.\n")
-	
 	// Get source IP and record in the log.
 	sourceIP := r.Header.Get("X-FORWARDED-FOR")
-	glog.Infof("source IP is %v, status code is %v", sourceIP, 200)
+	if sourceIP == "" {
+		sourceIP = "unknown"
+	}
+	log.Info().Msgf("source IP is %v, status code is %v", sourceIP, 200)
 }
 
 // HealthCheckHandler simply return ok which is used for health checking.

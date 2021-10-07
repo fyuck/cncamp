@@ -25,7 +25,7 @@ func TestHomeHandler(t *testing.T) {
 		testEnv	string
 		testResponseBody string
 	}{
-		{"empty version", "test1", "", "No VERSION found.\nRequest headers are written in response headers.\n"},
+		{"empty version", "test1", "", "Request headers are written in response headers.\n"},
 		{"version v1", "test2", "v1", "Request headers are written in response headers.\n"},
 	}
 
