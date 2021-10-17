@@ -1,0 +1,17 @@
+FROM golang:alpine as go-base
+
+RUN apk add --no-cache --virtual .build-deps \
+    git \
+    && git clone https://github.com/fyuck/cncamp.git \
+    && cd cncamp/section2 \
+    && go mod download \
+    && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o httpserver . \
+    && apk del .build-deps
+
+FROM alpine
+
+COPY --from=go-base /go/cncamp/section2/httpserver /app/
+
+CMD /app/httpserver
+
+EXPOSE 80
